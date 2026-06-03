@@ -21,6 +21,19 @@ int minDistance(string word1, string word2) {
     }
     return dp[0][0];
 }
-int main() {
+int main(int argc, char* argv[]){
+    //I expect the input to be in the form "command query dictionaryfilename.txt".
+    //Since there are 3 parts to it, argc should be 3.
+    if(argc != 3){
+        cout<<"Usage: "<<argv[0]<<"<query> <dictionary_filename>"<<endl;
+        return 1;
+    }
+    string query= argv[1];
+    string filename= argv[2];
+    ifstream fin(filename); //This is for opening the file for reading
+    if(!fin){
+        cout<<"Error opening file: "<<filename<<'\n';
+        return 1;
+    }
     return 0;
 }
