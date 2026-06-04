@@ -47,7 +47,7 @@ int main(int argc, char* argv[]){
     vector<string> words;
     string word;
     while(fin >> word){
-        words.push_back(word);
+        words.emplace_back(word);
     }
     if(words.empty()){
         cout<<"The dictionary file is empty"<<'\n';
@@ -60,13 +60,26 @@ int main(int argc, char* argv[]){
     vector<pair<int, string>> results2;
     vector<pair<int, string>> results3;
     vector<pair<int, string>> results4;
-    thread t1(processchunk, cref(words), cref(query), 0, chunksize, ref(results1));
-    thread t2(processchunk, cref(words), cref(query), chunksize, 2*chunksize, ref(results2));
-    thread t3(processchunk, cref(words), cref(query), 2*chunksize, 3*chunksize, ref(results3));
-    thread t4(processchunk, cref(words), cref(query), 3*chunksize, n, ref(results4));
+    thread t1(processchunk, cref(words), cref(query), 0, min(chunksize, n), ref(results1));
+    thread t2(processchunk, cref(words), cref(query), min(chunksize,n), min(2*chunksize, n), ref(results2));
+    thread t3(processchunk, cref(words), cref(query), min(2*chunksize,n), min(3*chunksize, n), ref(results3));
+    thread t4(processchunk, cref(words), cref(query), min(3*chunksize, n), n, ref(results4));
     t1.join();
     t2.join();
     t3.join();
     t4.join();
+
+    vector<pair<int, string>> results;
+    results.insert(results.end(), results1.begin(), results1.end());
+    results.insert(results.end(), results2.begin(), results2.end());
+    results.insert(results.end(), results3.begin(), results3.end());
+    results.insert(results.end(), results4.begin(), results4.end());
+    sort(results.begin(), results.end());
+    int limit = min(5, (int)results.size());
+
+    cout<< "Top matches:"<<'\n';
+    for(int i=0; i<limit; i++){
+        cout<< results[i].second<<" (dist: "<<results[i].first<<")"<<'\n';
+    }
     return 0;
 }
