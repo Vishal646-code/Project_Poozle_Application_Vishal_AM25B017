@@ -33,7 +33,7 @@ void worker(const vector<vector<int>> &a, const vector<vector<int>> &b, vector<v
     }
 }
 
-vector<vector<int>> parmultiply(const vector<vector<int>> &a, const vector<vector<int>> &b){
+vector<vector<int>> parmul(const vector<vector<int>> &a, const vector<vector<int>> &b){
     int n= a.size();
     int chunk= (n+3)/4;
 
@@ -52,8 +52,23 @@ vector<vector<int>> parmultiply(const vector<vector<int>> &a, const vector<vecto
     return result;
 }
 int main(){
-    int n=128;
-    vector<vector<int>> a= genmatrix(n);
-    vector<vector<int>> b= genmatrix(n);
+    vector<int> sizes= {128, 256, 512, 1024};
+    for(int n: sizes){
+        vector<vector<int>> a= genmatrix(n);
+        vector<vector<int>> b= genmatrix(n);
+        auto start1= chrono::high_resolution_clock::now();
+        vector<vector<int>> c = seqmul(a, b);
+        auto end1= chrono::high_resolution_clock::now();
+        double seqtime = chrono::duration<double, milli>(end1-start1).count();
+
+        auto start2= chrono::high_resolution_clock::now();
+        vector<vector<int>> d = parmul(a, b);
+        auto end2= chrono::high_resolution_clock::now();
+        double partime = chrono::duration<double, milli>(end2-start2).count();
+
+        cout<<"Time for sequential execution for input size "<<n<<" : "<< seqtime<<" ms"<<'\n';
+        cout<<"Time for parallel execution for input size "<<n<<" : "<< partime<<" ms"<<'\n';
+        cout<<"Speedup : "<< seqtime/partime<<'\n';
+    }
     return 0;
 }
